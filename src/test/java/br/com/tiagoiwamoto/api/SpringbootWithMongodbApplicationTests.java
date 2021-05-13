@@ -1,4 +1,4 @@
-package br.com.tiagoiwamoto.api.samples.springbootwithmongodb;
+package br.com.tiagoiwamoto.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

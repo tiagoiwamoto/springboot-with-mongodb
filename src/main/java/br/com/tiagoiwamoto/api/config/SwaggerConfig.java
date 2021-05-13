@@ -1,4 +1,12 @@
-package br.com.tiagoiwamoto.api.samples.springbootwithmongodb.config;
+package br.com.tiagoiwamoto.api.config;
+
+/*
+ * Tiago Henrique Iwamoto
+ * tiago.iwamoto@gmail.com
+ * linkedin.com/in/tiago-iwamoto
+ * System specialist
+ * 28/04/2021 | 21:35
+ */
 
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -8,23 +16,13 @@ import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-/*
-    # Tiago Henrique Iwamoto
-    # tiago.iwamoto@gmail.com
-    # 14/01/2021 - 15:05
-*/
-
 @Configuration
 public class SwaggerConfig {
-
-    //url default de acesso é: http://localhost:8082/swagger-ui/index.html
 
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-                .group("springboot-with-mongodb-public")
-                .packagesToScan("br.com.tiagoiwamoto.api.samples.springbootwithmongodb.controller")
+                .group("public-api")
                 .pathsToMatch("/v1/**")
                 .build();
     }
@@ -32,12 +30,12 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("API to manager users")
-                        .description("This api manager the users.")
+                .info(new Info().title("Blog API")
+                        .description("API of a simple Blog.")
                         .version("v0.0.1")
                         .license(new License().name("Apache 2.0").url("http://localhost")))
                 .externalDocs(new ExternalDocumentation()
-                        .description("Users Wiki Documentation")
+                        .description("BlogApi Wiki Documentation")
                         .url("https://localhost:4200/docs"));
     }
 }

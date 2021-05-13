@@ -1,4 +1,4 @@
-package br.com.tiagoiwamoto.api.samples.springbootwithmongodb;
+package br.com.tiagoiwamoto.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
