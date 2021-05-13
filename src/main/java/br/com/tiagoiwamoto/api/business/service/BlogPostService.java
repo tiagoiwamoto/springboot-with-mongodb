@@ -17,6 +17,7 @@ import br.com.tiagoiwamoto.api.exception.PostLikeException;
 import br.com.tiagoiwamoto.api.exception.PostRecoverException;
 import br.com.tiagoiwamoto.api.repository.BlogCategoryRepository;
 import br.com.tiagoiwamoto.api.repository.BlogPostRepository;
+import br.com.tiagoiwamoto.api.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +42,7 @@ public class BlogPostService {
     }
 
     public BlogPost savePost(BlogPost post){
+        log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
         try{
             Optional<BlogCategory> optionalBlogCategory = this.blogCategoryRepository.findById(post.getCategoryId());
             if(optionalBlogCategory.isPresent()){
@@ -55,29 +57,35 @@ public class BlogPostService {
                 throw new CategoryRecoverException();
             }
         }catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
             throw new PostCreationException();
         }
     }
 
     public List<BlogPost> recoverLastesPosts(){
+        log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
         try{
             PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "createdAt"));
             Page<BlogPost> pagePosts = this.blogPostRepository.findAll(pageRequest);
             return pagePosts.getContent();
         }catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
             throw new PostRecoverException();
         }
     }
 
     public List<BlogPost> recoverPostsByCategory(String category){
+        log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
         try{
             return this.blogPostRepository.findAllByCategoryId(category);
         }catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
             throw new PostRecoverException();
         }
     }
 
     public BlogPost likePost(String postId, String userId){
+        log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
         try{
             Optional<BlogPost> optionalBlogPost = this.blogPostRepository.findById(postId);
             if(optionalBlogPost.isPresent()){
@@ -95,19 +103,24 @@ public class BlogPostService {
                 if(userExists == null){
                     blogPost.getLikes().add(userId);
                     this.blogPostRepository.save(blogPost);
+                    log.info(Constants.FINISHING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
                     return blogPost;
                 }else{
+                    log.warn("User already liked this post");
                     throw new PostLikeException();
                 }
             }else {
+                log.error("This post dont exists on database -> ".concat(postId));
                 throw new PostRecoverException();
             }
         }catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
             throw new PostRecoverException();
         }
     }
 
     public BlogPost commentPost(String postId, BlogComment comment){
+        log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
         try{
             Optional<BlogPost> optionalBlogPost = this.blogPostRepository.findById(postId);
             if(optionalBlogPost.isPresent()){
@@ -117,11 +130,14 @@ public class BlogPostService {
                 }
                 blogPost.getComments().add(comment);
                 this.blogPostRepository.save(blogPost);
+                log.info(Constants.FINISHING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
                 return blogPost;
             }else {
+                log.error("This post dont exists on database -> ".concat(postId));
                 throw new PostRecoverException();
             }
         }catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
             throw new PostRecoverException();
         }
     }
