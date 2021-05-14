@@ -11,11 +11,9 @@ package br.com.tiagoiwamoto.api.business.service;
 import br.com.tiagoiwamoto.api.entity.BlogCategory;
 import br.com.tiagoiwamoto.api.entity.BlogComment;
 import br.com.tiagoiwamoto.api.entity.BlogPost;
-import br.com.tiagoiwamoto.api.exception.CategoryRecoverException;
 import br.com.tiagoiwamoto.api.exception.PostCreationException;
 import br.com.tiagoiwamoto.api.exception.PostLikeException;
 import br.com.tiagoiwamoto.api.exception.PostRecoverException;
-import br.com.tiagoiwamoto.api.repository.BlogCategoryRepository;
 import br.com.tiagoiwamoto.api.repository.BlogPostRepository;
 import br.com.tiagoiwamoto.api.util.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -33,29 +31,21 @@ import java.util.Optional;
 public class BlogPostService {
 
     private final BlogPostRepository blogPostRepository;
-    private final BlogCategoryRepository blogCategoryRepository;
+    private final BlogCategoryService blogCategoryService;
 
     public BlogPostService(BlogPostRepository blogPostRepository,
-                           BlogCategoryRepository blogCategoryRepository) {
+                           BlogCategoryService blogCategoryService) {
         this.blogPostRepository = blogPostRepository;
-        this.blogCategoryRepository = blogCategoryRepository;
+        this.blogCategoryService = blogCategoryService;
     }
 
     public BlogPost savePost(BlogPost post){
         log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
         try{
-            Optional<BlogCategory> optionalBlogCategory = this.blogCategoryRepository.findById(post.getCategoryId());
-            if(optionalBlogCategory.isPresent()){
-                BlogPost blogPost = this.blogPostRepository.save(post);
-                BlogCategory blogCategory = optionalBlogCategory.get();
-                if(blogCategory.getPosts() == null){
-                    blogCategory.setPosts(new ArrayList<>());
-                }
-                this.blogCategoryRepository.save(blogCategory);
-                return blogPost;
-            }else{
-                throw new CategoryRecoverException();
-            }
+            BlogCategory blogCategory = this.blogCategoryService.recoverCategory(post.getCategoryId());
+            BlogPost blogPost = this.blogPostRepository.save(post);
+            this.blogCategoryService.saveCategory(blogCategory);
+            return blogPost;
         }catch (Exception e){
             log.error(Constants.FAILED.concat(e.toString()));
             throw new PostCreationException();
@@ -113,9 +103,11 @@ public class BlogPostService {
                 log.error("This post dont exists on database -> ".concat(postId));
                 throw new PostRecoverException();
             }
-        }catch (Exception e){
-            log.error(Constants.FAILED.concat(e.toString()));
+        }catch (PostRecoverException pe){
             throw new PostRecoverException();
+        } catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
+            throw new PostLikeException();
         }
     }
 

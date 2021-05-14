@@ -37,7 +37,7 @@ public class BlogCategoryController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<ApiDTO<List<BlogCategory>>> getCategories(){
-        return ResponseEntity.ok(this.blogCategoryBO.performrecoverCategories());
+        return ResponseEntity.ok(this.blogCategoryBO.performRecoverCategories());
     }
 
     @PostMapping

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,6 +44,28 @@ public class BlogCategoryService {
             });
             log.info(Constants.FINISHING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
             return categories;
+        }catch (Exception e){
+            log.error(Constants.FAILED.concat(e.toString()));
+            throw new CategoryRecoverException();
+        }
+    }
+
+    public BlogCategory recoverCategory(String id){
+        log.info(Constants.STARTING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
+        try{
+            Optional<BlogCategory> optionalBlogCategory = this.blogCategoryRepository.findById(id);
+            if(optionalBlogCategory.isPresent()){
+                BlogCategory blogCategory = optionalBlogCategory.get();
+                blogCategory.setPosts(new ArrayList<>());
+                blogCategory.getPosts().addAll(this.blogPostService.recoverPostsByCategory(blogCategory.getId()));
+                log.info(Constants.FINISHING.concat(Thread.currentThread().getName().concat(Constants.METHOD)));
+                return blogCategory;
+            }else{
+                log.error("Category not found");
+                throw new CategoryRecoverException();
+            }
+
+
         }catch (Exception e){
             log.error(Constants.FAILED.concat(e.toString()));
             throw new CategoryRecoverException();

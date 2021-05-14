@@ -33,7 +33,7 @@ public class BlogCategoryBO {
                 this.blogCategoryService.saveCategory(category));
     }
 
-    public ApiDTO<List<BlogCategory>> performrecoverCategories(){
+    public ApiDTO<List<BlogCategory>> performRecoverCategories(){
         return new ApiDTO<>(
                 "0",
                 "Categorias recuperadas com sucesso",

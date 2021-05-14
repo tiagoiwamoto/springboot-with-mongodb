@@ -38,21 +38,6 @@ public class ApiDTO<T> implements Serializable {
         this.timestamp = LocalDateTime.now();
     }
 
-    public ApiDTO withCode(String code) {
-        this.code = code;
-        return this;
-    }
-
-    public ApiDTO withMessage(String message) {
-        this.message = message;
-        return this;
-    }
-
-    public ApiDTO withDetail(T detail) {
-        this.details = detail;
-        return this;
-    }
-
     public String getCode() {
         return code;
     }
